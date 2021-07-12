@@ -3,13 +3,13 @@ const puppeteer = require('puppeteer')
 const scriptingResults = [
     {
         name: 'ahmed',
-        id: 54444,
-        nationatlity: 'egypt',
         position: 'winger',
+        id: 54444,
+        url: '/coro/profil/spieler/15790',
+        nationatlity: 'egypt',
         games: 54,
         goals: 45,
         assists: 5,
-        url: '/coro/profil/spieler/15790',
     },
 ]
 async function main() {
@@ -38,17 +38,29 @@ async function main() {
                 .children()
                 .find('.spielprofil_tooltip')
                 .attr('id')
-            const url = $(element)
+            const url = `https://www.transfermarkt.com${$(element)
                 .children()
                 .find('.spielprofil_tooltip')
-                .attr('href')
+                .attr('href')} `
             const nationatlity = $(element)
                 .children()
                 .find('.flaggenrahmen')
                 .attr('alt')
-
-            return { name, position, id, url, nationatlity }
-            //   const id =$(".spielprofil_tooltip").each((index,element) => {console.log($(element).attr("id"))  })
+            const age = $(element).children('td:nth-child(5)').text()
+            const appearances = $(element).children('td:nth-child(6)').text()
+            const goals = $(element).children('td:nth-child(7)').text()
+            const assists = $(element).children('td:nth-child(8)').text()
+            return {
+                name,
+                position,
+                id,
+                url,
+                nationatlity,
+                age,
+                appearances,
+                goals,
+                assists,
+            }
         })
         .get()
 
