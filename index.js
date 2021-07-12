@@ -44,11 +44,8 @@ async function main() {
                 .attr('href')
             const nationatlity = $(element)
                 .children()
-                .find('.inline-table')
-                .children()
-                .find('td:nth-of-type(4)')
-                .children()
-                .attr('title')
+                .find('.flaggenrahmen')
+                .attr('alt')
 
             return { name, position, id, url, nationatlity }
             //   const id =$(".spielprofil_tooltip").each((index,element) => {console.log($(element).attr("id"))  })
