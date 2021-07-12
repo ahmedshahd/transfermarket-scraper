@@ -1,26 +1,13 @@
 const cheerio = require('cheerio')
 const puppeteer = require('puppeteer')
-const scriptingResults = [
-    {
-        name: 'ahmed',
-        position: 'winger',
-        id: 54444,
-        url: '/coro/profil/spieler/15790',
-        nationatlity: 'egypt',
-        games: 54,
-        goals: 45,
-        assists: 5,
-    },
-]
-async function main() {
-    const browser = await puppeteer.launch({ headless: false })
-    const page = await browser.newPage()
+
+async function scrapPlayersBio(page) {
     await page.goto(
         'https://www.transfermarkt.com/indian-super-league/scorerliste/wettbewerb/IND1/plus//galerie/0?saison_id=ges&altersklasse=alle'
     )
     const html = await page.content()
     const $ = cheerio.load(html)
-    const results = $('#yw1 > table > tbody > tr')
+    const playersBio = $('#yw1 > table > tbody > tr')
         .map((index, element) => {
             const name = $(element)
                 .children()
@@ -64,7 +51,26 @@ async function main() {
         })
         .get()
 
-    console.log(results)
+    console.log(playersBio)
+    console.log(playersBio.length, typeof playersBio)
 }
-
+async function scrapPlayersInjuryHistory(playersBio, page) {
+    for (var i = 0; i < playersBio.length; i++) {
+        const playerPage = playersBio[i].url
+        const injuryHistoryUrl = playerPage
+            .trim()
+            .replace('profil', 'verletzungen')
+        await page.goto(injuryHistoryUrl)
+        const html = await page.content()
+    }
+}
+async function main() {
+    const browser = await puppeteer.launch({ headless: false })
+    const page = await browser.newPage()
+    const playersBio = await scrapPlayersBio(page)
+    const playerWithInjuryHistory = await scrapPlayersInjuryHistory(
+        playersBio,
+        page
+    )
+}
 main()
