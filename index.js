@@ -29,6 +29,8 @@ async function scrapPlayersBio(page) {
                 .children()
                 .find('.spielprofil_tooltip')
                 .attr('href')} `
+            const injuryUrl = `${url.trim().replace('profil', 'verletzungen')}`
+            const transferUrl = `${url.trim().replace('profil', 'transfers')}`
             const nationatlity = $(element)
                 .children()
                 .find('.flaggenrahmen')
@@ -42,6 +44,8 @@ async function scrapPlayersBio(page) {
                 position,
                 id,
                 url,
+                injuryUrl,
+                transferUrl,
                 nationatlity,
                 age,
                 appearances,
@@ -52,18 +56,18 @@ async function scrapPlayersBio(page) {
         .get()
 
     console.log(playersBio)
-    console.log(playersBio.length, typeof playersBio)
 }
 async function scrapPlayersInjuryHistory(playersBio, page) {
     for (var i = 0; i < playersBio.length; i++) {
-        const playerPage = playersBio[i].url
-        const injuryHistoryUrl = playerPage
+        let injuryHistoryUrl = playersBio[i].url
             .trim()
             .replace('profil', 'verletzungen')
-        await page.goto(injuryHistoryUrl)
-        const html = await page.content()
     }
+    await page.goto(injuryHistoryUrl)
+    const html = await page.content()
+    const $ = await cheerio.load(html)
 }
+
 async function main() {
     const browser = await puppeteer.launch({ headless: false })
     const page = await browser.newPage()
