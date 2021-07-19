@@ -1,80 +1,61 @@
-const cheerio = require('cheerio')
-const puppeteer = require('puppeteer')
+const {
+    mapOverSelector,
+    toCheerio,
+    loadHTML,
+    getText,
+    getAttr,
+} = require('./utils')
 
-async function scrapPlayersBio(page) {
-    await page.goto(
-        'https://www.transfermarkt.com/indian-super-league/scorerliste/wettbewerb/IND1/plus//galerie/0?saison_id=ges&altersklasse=alle'
-    )
-    const html = await page.content()
-    const $ = cheerio.load(html)
-    const playersBio = $('#yw1 > table > tbody > tr')
-        .map((index, element) => {
-            const name = $(element)
-                .children()
-                .find('.inline-table')
-                .children()
-                .find('td:nth-of-type(2)')
-                .text()
-            const position = $(element)
-                .children()
-                .find('.inline-table')
-                .children()
-                .find('td:nth-of-type(1)')
-                .text()
-            const id = $(element)
-                .children()
-                .find('.spielprofil_tooltip')
-                .attr('id')
-            const url = `https://www.transfermarkt.com${$(element)
-                .children()
-                .find('.spielprofil_tooltip')
-                .attr('href')} `
-            const injuryUrl = `${url.trim().replace('profil', 'verletzungen')}`
-            const transferUrl = `${url.trim().replace('profil', 'transfers')}`
-            const nationatlity = $(element)
-                .children()
-                .find('.flaggenrahmen')
-                .attr('alt')
-            const age = $(element).children('td:nth-child(5)').text()
-            const appearances = $(element).children('td:nth-child(6)').text()
-            const goals = $(element).children('td:nth-child(7)').text()
-            const assists = $(element).children('td:nth-child(8)').text()
-            return {
-                name,
-                position,
-                id,
-                url,
-                injuryUrl,
-                transferUrl,
-                nationatlity,
-                age,
-                appearances,
-                goals,
-                assists,
-            }
-        })
-        .get()
+const getCompetitionURL = (id, page) =>
+    `https://www.transfermarkt.com/d/scorerliste/wettbewerb/${id}/saison_id/ges/plus//d/0/page/${page}`
 
-    console.log(playersBio)
-}
-async function scrapPlayersInjuryHistory(playersBio, page) {
-    for (var i = 0; i < playersBio.length; i++) {
-        let injuryHistoryUrl = playersBio[i].url
-            .trim()
-            .replace('profil', 'verletzungen')
-    }
-    await page.goto(injuryHistoryUrl)
-    const html = await page.content()
-    const $ = await cheerio.load(html)
+async function getPlayerList(competitionId, page) {
+    const url = getCompetitionURL(competitionId, page)
+    const html = await loadHTML(url)
+    const $ = toCheerio(html)
+
+    const list = mapOverSelector($, '#yw1 > .items > tbody > tr', ($ele) => {
+        const position = getText($ele, '.inline-table td:nth-of-type(1)')
+        const name = getText($ele, '.spielprofil_tooltip')
+
+        const id = getAttr($ele, '.spielprofil_tooltip', 'id')
+        const nationatlity = getAttr($ele, '.flaggenrahmen', 'alt')
+
+        const age = getText($ele, 'td:nth-child(5)')
+        const appearances = getText($ele, 'td:nth-child(6)')
+        const goals = getText($ele, 'td:nth-child(7)')
+        const assists = getText($ele, 'td:nth-child(8)')
+
+        return {
+            id,
+            age,
+            name,
+            goals,
+            assists,
+            position,
+            appearances,
+            nationatlity,
+        }
+    })
+
+    if (page >= 1) return list // TMP: to test
+
+    const nextPage = getText($('#yw2'), '.page.selected + .page')
+    const nextPagePlayers = nextPage
+        ? await getPlayerList(competitionId, nextPage)
+        : []
+
+    return list.concat(nextPagePlayers)
 }
 
 async function main() {
-    const browser = await puppeteer.launch({ headless: false })
-    const page = await browser.newPage()
-    const playersBio = await scrapPlayersBio(page)
-    const playerWithInjuryHistory = await scrapPlayersInjuryHistory(
-        playersBio,
-        page
-    )
+    // const playersInd = await getPlayerList('IND1', 1)
+    const playersAlg = await getPlayerList('ALG1', 1)
+
+    console.log({
+        // playersInd: playersInd[0],
+        playersAlg: playersAlg.length,
+    })
 }
+
 main()
