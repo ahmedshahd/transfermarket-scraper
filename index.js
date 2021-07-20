@@ -6,11 +6,13 @@ const {
     getAttr,
 } = require('./utils')
 
-const getCompetitionURL = (id, page) =>
-    `https://www.transfermarkt.com/d/scorerliste/wettbewerb/${id}/saison_id/ges/plus//d/0/page/${page}`
+const { createTransfermarket } = require('./config')
+
+const { getCompetitionURL } = createTransfermarket('http://localhost:5000')
 
 async function getPlayerList(competitionId, page) {
     const url = getCompetitionURL(competitionId, page)
+    console.log(url)
     const html = await loadHTML(url)
     const $ = toCheerio(html)
 
@@ -38,7 +40,7 @@ async function getPlayerList(competitionId, page) {
         }
     })
 
-    if (page >= 1) return list // TMP: to test
+    if (page >= 5) return list // TMP: to test
 
     const nextPage = getText($('#yw2'), '.page.selected + .page')
     const nextPagePlayers = nextPage
@@ -51,6 +53,7 @@ async function getPlayerList(competitionId, page) {
 async function main() {
     // const playersInd = await getPlayerList('IND1', 1)
     const playersAlg = await getPlayerList('ALG1', 1)
+    console.log(playersAlg)
 
     console.log({
         // playersInd: playersInd[0],
@@ -58,4 +61,4 @@ async function main() {
     })
 }
 
-main()
+// main()

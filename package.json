@@ -1,19 +1,21 @@
 {
-  "name": "tf-scraper",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.10",
-    "node-fetch": "^2.6.1",
-    "prettier": "^2.3.2",
-    "puppeteer": "^10.1.0",
-    "ramda": "^0.27.1"
-  }
+    "name": "tf-scraper",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "cheerio": "^1.0.0-rc.10",
+        "node-fetch": "^2.6.1",
+        "puppeteer": "^10.1.0",
+        "ramda": "^0.27.1"
+    },
+    "devDependencies": {
+        "prettier": "^2.3.2"
+    }
 }
