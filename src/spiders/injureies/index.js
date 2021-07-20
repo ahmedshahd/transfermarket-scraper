@@ -4,7 +4,7 @@ const {
     loadHTML,
     getText,
     getAttr,
-} = require('./index')
+} = require('../../utils')
 
 function getPlayerInjuriesURL(id) {
     return `https://www.transfermarkt.com/ddd/verletzungen/spieler/${id}`

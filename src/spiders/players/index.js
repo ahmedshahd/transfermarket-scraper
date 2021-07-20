@@ -4,9 +4,9 @@ const {
     loadHTML,
     getText,
     getAttr,
-} = require('./utils')
+} = require('../../utils')
 
-const { createTransfermarket } = require('./config')
+const { createTransfermarket } = require('../../config')
 
 const { getCompetitionURL } = createTransfermarket('http://localhost:5000')
 
@@ -49,16 +49,3 @@ async function getPlayerList(competitionId, page) {
 
     return list.concat(nextPagePlayers)
 }
-
-async function main() {
-    // const playersInd = await getPlayerList('IND1', 1)
-    const playersAlg = await getPlayerList('ALG1', 1)
-    console.log(playersAlg)
-
-    console.log({
-        // playersInd: playersInd[0],
-        playersAlg: playersAlg.length,
-    })
-}
-
-// main()
