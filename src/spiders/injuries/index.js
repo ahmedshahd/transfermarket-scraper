@@ -38,5 +38,8 @@ async function getPlayerInjuries(playerId) {
         }
     })
 }
+module.exports = {
+    getPlayerInjuries,
+}
 
 getPlayerInjuries(261988).then(console.log)

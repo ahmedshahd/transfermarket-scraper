@@ -1,10 +1,4 @@
-const {
-    mapOverSelector,
-    toCheerio,
-    loadHTML,
-    getText,
-    getAttr,
-} = require('../../utils')
+const { mapOverSelector, toCheerio, loadHTML, getText } = require('../../utils')
 
 function getPlayerTransferURL(id) {
     return `https://www.transfermarkt.com/ddd/transfers/spieler/${id}`
@@ -35,6 +29,8 @@ async function getPlayertransfers(playerId) {
         }
     })
 }
-
+module.exports = {
+    getPlayertransfers,
+}
 getPlayertransfers(222813).then(console.log)
 console.log('here')

@@ -49,3 +49,6 @@ async function getPlayerList(competitionId, page) {
 
     return list.concat(nextPagePlayers)
 }
+module.exports = {
+    getPlayerList,
+}
