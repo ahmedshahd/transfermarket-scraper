@@ -1,23 +1,18 @@
-const cheerio = require('cheerio')
-const fetch = require('node-fetch')
+const { JSDOM } = require('jsdom')
+const { map, path, curry } = require('ramda')
 
-const loadHTML = (u) => fetch(u).then((r) => r.text())
-const toCheerio = (html) => cheerio.load(html)
-const mapOverSelector = ($, selector, fn) => {
-    return $(selector)
-        .map((i, element) => fn($(element)))
-        .get()
-}
+const loadDocument = (u) => JSDOM.fromURL(u).then(path(['window', 'document']))
+const getText = curry((s, e) => e.querySelector(s).textContent)
+const getAttr = curry((name, s, e) => e.querySelector(s).getAttribute(name))
+const mapElements = curry((fn, s, e) => map(fn, e.querySelectorAll(s)))
 
-const getText = ($, selector) => $.find(selector).text()
-const getAttr = ($, selector, name) => $.find(selector).attr(name)
+const getAlt = getAttr('alt')
 
 module.exports = {
-    loadHTML,
-    toCheerio,
+    loadDocument,
 
     getText,
     getAttr,
-
-    mapOverSelector,
+    getAlt,
+    mapElements,
 }

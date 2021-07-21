@@ -1,39 +1,31 @@
 const { curry } = require('ramda')
-const {
-    mapOverSelector,
-    toCheerio,
-    loadHTML,
-    getText,
-    getAttr,
-} = require('../../../utils')
+const { mapElements, getText, getAlt, loadDocument } = require('../../../utils')
+
+const parsePlayerInjury = (element) => {
+    const season = getText('td:nth-of-type(1)', element)
+    const injurey = getText('td:nth-of-type(2)', element)
+
+    const fromDate = getText('td:nth-of-type(3)', element)
+    const untilDate = getText('td:nth-of-type(4)', element)
+
+    const gameMissed = getText('td:nth-of-type(6)', element)
+    const clubs = mapElements(getAlt('img'), 'td:nth-of-type(6) a', element)
+
+    return {
+        season,
+        injurey,
+        fromDate,
+        untilDate,
+        gameMissed,
+        clubs,
+    }
+}
 
 const getPlayerInjuries = curry(async (urls, playerId) => {
     const url = urls.playerInjuries(playerId)
-    const html = await loadHTML(url)
-    const $ = toCheerio(html)
+    const document = await loadDocument(url)
 
-    return mapOverSelector($, '#yw1 > table > tbody > tr', ($ele) => {
-        const season = getText($ele, 'td:nth-of-type(1)')
-        const injurey = getText($ele, 'td:nth-of-type(2)')
-
-        const fromDate = getText($ele, 'td:nth-of-type(3)')
-        const untilDate = getText($ele, 'td:nth-of-type(4)')
-
-        const gameMissed = getText($ele, 'td:nth-of-type(6)')
-        const clubs = $ele
-            .find('td:nth-of-type(6) a')
-            .map((i, a) => getAttr($(a), 'img', 'alt'))
-            .get()
-
-        return {
-            season,
-            injurey,
-            fromDate,
-            untilDate,
-            gameMissed,
-            clubs,
-        }
-    })
+    return mapElements(parsePlayerInjury, '#yw1 > table > tbody > tr', document)
 })
 
 module.exports = {

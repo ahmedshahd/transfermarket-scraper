@@ -4,32 +4,35 @@ const {
     toCheerio,
     loadHTML,
     getText,
+    loadDocument,
+    mapElements,
 } = require('../../../utils')
+
+const parseTransfer = (element) => {
+    const season = getText('td:nth-of-type(1)', element)
+    const date = getText('td:nth-of-type(2)', element)
+
+    const left = getText('td:nth-of-type(5) a', element)
+    const joined = getText('td:nth-of-type(8) a', element)
+
+    const marketValue = getText('td:nth-of-type(9)', element)
+    const fee = getText('td:nth-of-type(10)', element)
+
+    return {
+        season,
+        date,
+        left,
+        joined,
+        marketValue,
+        fee,
+    }
+}
 
 const getPlayerTransfers = curry(async (urls, playerId) => {
     const url = urls.playerTransfers(playerId)
-    const html = await loadHTML(url)
-    const $ = toCheerio(html)
+    const document = await loadDocument(url)
 
-    return mapOverSelector($, ' .zeile-transfer', ($ele) => {
-        const season = getText($ele, 'td:nth-of-type(1)')
-        const date = getText($ele, 'td:nth-of-type(2)')
-
-        const left = getText($ele, 'td:nth-of-type(5) a')
-        const joined = getText($ele, 'td:nth-of-type(8) a')
-
-        const marketValue = getText($ele, 'td:nth-of-type(9)')
-        const fee = getText($ele, 'td:nth-of-type(10)')
-
-        return {
-            season,
-            date,
-            left,
-            joined,
-            marketValue,
-            fee,
-        }
-    })
+    return mapElements(parseTransfer, '.zeile-transfer', document)
 })
 
 module.exports = {
