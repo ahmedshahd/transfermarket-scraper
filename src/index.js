@@ -1,3 +1,4 @@
+const { map, pluck } = require('ramda')
 const { createTransfermarket } = require('./spiders/transfermarket')
 
 async function main() {
@@ -6,9 +7,13 @@ async function main() {
         baseurl: 'https://www.transfermarkt.com',
     })
 
-    player.listByCompetition('ALG1', 4).then(console.log)
-    player.injuries(261988).then(console.log)
-    player.transfers(261988).then(console.log)
+    const players = await player.listByCompetition('ALG1', 4)
+    const playersId = pluck('id', players)
+
+    const playersInjuries = await Promise.all(map(player.injuries, playersId))
+    const playerTransfers = await Promise.all(map(player.transfers, playersId))
+
+    return { players, playersInjuries, playerTransfers }
 }
 
-main()
+main().then(console.log)
