@@ -2,7 +2,7 @@ const { applySpec } = require('ramda')
 const { getText, getAttr, getAlt, mapElements } = require('../../../utils')
 
 const parseCompetitionPlayer = applySpec({
-    position: getText('.inline-table td:nth-of-type(1)'),
+    position: getText('tr:nth-child(2) > td'),
     name: getText('.spielprofil_tooltip'),
 
     id: getAttr('id', '.spielprofil_tooltip'),
