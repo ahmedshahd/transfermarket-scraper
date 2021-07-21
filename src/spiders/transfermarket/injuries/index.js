@@ -1,18 +1,15 @@
+const { curry } = require('ramda')
 const {
     mapOverSelector,
     toCheerio,
     loadHTML,
     getText,
     getAttr,
-} = require('../../utils')
+} = require('../../../utils')
 
-function getPlayerInjuriesURL(id) {
-    return `https://www.transfermarkt.com/ddd/verletzungen/spieler/${id}`
-}
-
-async function getPlayerInjuries(playerId) {
-    const injureyUrl = getPlayerInjuriesURL(playerId)
-    const html = await loadHTML(injureyUrl)
+const getPlayerInjuries = curry(async (urls, playerId) => {
+    const url = urls.playerInjuries(playerId)
+    const html = await loadHTML(url)
     const $ = toCheerio(html)
 
     return mapOverSelector($, '#yw1 > table > tbody > tr', ($ele) => {
@@ -37,9 +34,8 @@ async function getPlayerInjuries(playerId) {
             clubs,
         }
     })
-}
+})
+
 module.exports = {
     getPlayerInjuries,
 }
-
-getPlayerInjuries(261988).then(console.log)

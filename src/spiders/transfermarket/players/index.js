@@ -1,18 +1,14 @@
+const { curry } = require('ramda')
 const {
     mapOverSelector,
     toCheerio,
     loadHTML,
     getText,
     getAttr,
-} = require('../../utils')
+} = require('../../../utils')
 
-const { createTransfermarket } = require('../../config')
-
-const { getCompetitionURL } = createTransfermarket('http://localhost:5000')
-
-async function getPlayerList(competitionId, page) {
-    const url = getCompetitionURL(competitionId, page)
-    console.log(url)
+const getCompetitionPlayers = curry(async (urls, competitionId, page) => {
+    const url = urls.competitionPlayers(competitionId, page)
     const html = await loadHTML(url)
     const $ = toCheerio(html)
 
@@ -44,11 +40,12 @@ async function getPlayerList(competitionId, page) {
 
     const nextPage = getText($('#yw2'), '.page.selected + .page')
     const nextPagePlayers = nextPage
-        ? await getPlayerList(competitionId, nextPage)
+        ? await getCompetitionPlayers(urls, competitionId, nextPage)
         : []
 
     return list.concat(nextPagePlayers)
-}
+})
+
 module.exports = {
-    getPlayerList,
+    getCompetitionPlayers,
 }

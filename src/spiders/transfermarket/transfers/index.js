@@ -1,12 +1,14 @@
-const { mapOverSelector, toCheerio, loadHTML, getText } = require('../../utils')
+const { curry } = require('ramda')
+const {
+    mapOverSelector,
+    toCheerio,
+    loadHTML,
+    getText,
+} = require('../../../utils')
 
-function getPlayerTransferURL(id) {
-    return `https://www.transfermarkt.com/ddd/transfers/spieler/${id}`
-}
-
-async function getPlayertransfers(playerId) {
-    const transferUrl = getPlayerTransferURL(playerId)
-    const html = await loadHTML(transferUrl)
+const getPlayerTransfers = curry(async (urls, playerId) => {
+    const url = urls.playerTransfers(playerId)
+    const html = await loadHTML(url)
     const $ = toCheerio(html)
 
     return mapOverSelector($, ' .zeile-transfer', ($ele) => {
@@ -28,9 +30,8 @@ async function getPlayertransfers(playerId) {
             fee,
         }
     })
-}
+})
+
 module.exports = {
-    getPlayertransfers,
+    getPlayerTransfers,
 }
-getPlayertransfers(222813).then(console.log)
-console.log('here')

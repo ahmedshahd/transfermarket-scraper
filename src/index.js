@@ -1,16 +1,12 @@
-const { getPlayertransfers } = require('./spiders/index')
-const { getPlayerInjuries } = require('./spiders/index')
-const { getPlayerList } = require('./spiders/index')
+const { createTransfermarket } = require('./spiders/transfermarket')
 
 async function main() {
-    // const playersInd = await getPlayerList('IND1', 1)
-    const playersAlg = await getPlayerList('ALG1', 4)
-    console.log(playersAlg)
+    // const transfermarket = createTransfermarket('http://localhost:5000')
+    const transfermarket = createTransfermarket('https://www.transfermarkt.com')
 
-    console.log({
-        // playersInd: playersInd[0],
-        playersAlg: playersAlg.length,
-    })
+    transfermarket.getCompetitionPlayers('ALG1', 4).then(console.log)
+    // transfermarket.getPlayerInjuries(261988).then(console.log)
+    // transfermarket.getPlayerTransfers(261988).then(console.log)
 }
 
 main()
